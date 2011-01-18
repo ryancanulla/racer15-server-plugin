@@ -11,3 +11,6 @@ nbproject/private/
 *.DS_Store
 *.swp
 *.out
+.classpath
+.project
+.settings
