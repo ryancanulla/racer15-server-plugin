@@ -22,6 +22,7 @@ public class GameInitializer extends BaseExtensionLifecycleEventHandler {
         String extensionName = getApi().getExtensionName();
 
         // invoke the initialization method for each of your games
+        // initOneGame(extensionName, pluginName, gameType, maxPlayers)
         initOneGame(extensionName, "Racer15Plugin", "Racer15Plugin", 4);
     }
 
