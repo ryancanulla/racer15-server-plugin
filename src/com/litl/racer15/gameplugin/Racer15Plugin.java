@@ -110,7 +110,7 @@ public class Racer15Plugin extends BasePlugin {
 
         if (action.equals(PluginConstants.INIT_ME)) {
             handlePlayerInitRequest(playerName);
-        } else if (action.equals(PluginConstants.POSITION_UPDATE)) {
+        } else if (action.equals(PluginConstants.UPDATE_HEADING)) {
             relayMessage(playerName, messageIn);
         }
     }
@@ -166,7 +166,8 @@ public class Racer15Plugin extends BasePlugin {
 
 
     private synchronized void handlePlayerInitRequest(String playerName) {
-        EsObject message2 = new EsObject();
+        // send out the add player message
+    	EsObject message2 = new EsObject();
         message2.setString(PluginConstants.ACTION, PluginConstants.ADD_PLAYER);
         message2.setString(PluginConstants.NAME, playerName);
         sendAndLog("addUser", message2);
@@ -176,13 +177,17 @@ public class Racer15Plugin extends BasePlugin {
 
         // send the user the full user list
         EsObject message = new EsObject();
-        message.setString(PluginConstants.ACTION, PluginConstants.PLAYER_LIST);
+        message.setString(PluginConstants.ACTION, PluginConstants.PLAYER_LIST);    
+        // create and array of players
         EsObject[] list = getFullPlayerList();
         message.setEsObjectArray(PluginConstants.PLAYER_LIST, list);
+        // set the game state on the ESObject
         message.setString(PluginConstants.GAME_STATE, gameState.getState());
+        
         if (gameState == GameState.CountingDown) {
             message.setInteger(PluginConstants.COUNTDOWN_LEFT, getCountdownLeft());
         }
+        
         getApi().sendPluginMessageToUser(playerName, message);
         getApi().getLogger().debug("Message sent to " + playerName + ": " + message.toString());
 
@@ -256,7 +261,7 @@ public class Racer15Plugin extends BasePlugin {
         EsObject message = new EsObject();
         message.setString(PluginConstants.ACTION, PluginConstants.START_COUNTDOWN);
         message.setInteger(PluginConstants.COUNTDOWN_LEFT, getCountdownLeft());
-        sendToOneAndLog("DiggingPlugin2.startLateJoinerCountdown", playerName, message);
+        sendToOneAndLog("Racer15Plugin.startLateJoinerCountdown", playerName, message);
     }
 
     /**
@@ -270,7 +275,7 @@ public class Racer15Plugin extends BasePlugin {
         EsObject message = new EsObject();
         message.setString(PluginConstants.ACTION, PluginConstants.START_COUNTDOWN);
         message.setInteger(PluginConstants.COUNTDOWN_LEFT, PluginConstants.COUNTDOWN_SECONDS);
-        sendAndLog("DiggingPlugin2.startCountdown", message);
+        sendAndLog("Racer15Plugin.startCountdown", message);
         setCountdownCallback(PluginConstants.COUNTDOWN_SECONDS);
     }
 
@@ -279,7 +284,7 @@ public class Racer15Plugin extends BasePlugin {
         EsObject message = new EsObject();
         message.setString(PluginConstants.ACTION, PluginConstants.STOP_COUNTDOWN);
         message.setString(PluginConstants.GAME_STATE, GameState.WaitingForPlayers.getState());
-        sendAndLog("DiggingPlugin2.resetCountdown", message);
+        sendAndLog("Racer15Plugin.resetCountdown", message);
         gameState = GameState.WaitingForPlayers;
         getApi().setGameLockState(false);
     }
@@ -288,7 +293,7 @@ public class Racer15Plugin extends BasePlugin {
         getApi().cancelScheduledExecution(callbackId);
         EsObject message = new EsObject();
         message.setString(PluginConstants.ACTION, PluginConstants.STOP_COUNTDOWN);
-        sendAndLog("DiggingPlugin2.stopCountdown", message);
+        sendAndLog("Racer15Plugin.stopCountdown", message);
 
         if (playerInfoMap.size() >= PluginConstants.MINIMUM_PLAYERS) {
             getApi().setGameLockState(true);
@@ -303,7 +308,7 @@ public class Racer15Plugin extends BasePlugin {
         gameState = GameState.InPlay;
         EsObject message = new EsObject();
         message.setString(PluginConstants.ACTION, PluginConstants.START_GAME);
-        sendAndLog("DiggingPlugin2.startGame", message);
+        sendAndLog("Racer15Plugin.startGame", message);
     }
 
     private void endGame() {
@@ -317,7 +322,7 @@ public class Racer15Plugin extends BasePlugin {
         } else {
             message.setBoolean(PluginConstants.SUCCESS, false);
         }
-        sendAndLog("DiggingPlugin2.startGame", message);
+        sendAndLog("Racer15Plugin.startGame", message);
     }
 
     private void setCountdownCallback(int seconds) {
